@@ -9,28 +9,15 @@ const Footer = () => {
                         <div className="col-lg-3 col-md-4 col-sm-6">
                             <h5 className="text-white mb-4">Get In Touch</h5>
                             <p className="mb-2">
-                                <i className="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA
+                                <i className="fa fa-map-marker-alt me-3"></i>PTI road, Custom Mor, Kushtia
                             </p>
                             <p className="mb-2">
-                                <i className="fa fa-phone-alt me-3"></i>+012 345 67890
+                                <i className="fa fa-phone-alt me-3"></i>+8801781678998
                             </p>
                             <p className="mb-2">
-                                <i className="fa fa-envelope me-3"></i>info@example.com
+                                <i className="fa fa-envelope me-3"></i>mdeliaskhan1918004@gmail.com
                             </p>
-                            <div className="d-flex pt-2">
-                                <a className="btn btn-outline-light btn-social" href="#">
-                                    <i className="fab fa-twitter"></i>
-                                </a>
-                                <a className="btn btn-outline-light btn-social" href="#">
-                                    <i className="fab fa-facebook-f"></i>
-                                </a>
-                                <a className="btn btn-outline-light btn-social" href="#">
-                                    <i className="fab fa-youtube"></i>
-                                </a>
-                                <a className="btn btn-outline-light btn-social" href="#">
-                                    <i className="fab fa-linkedin-in"></i>
-                                </a>
-                            </div>
+                            
                         </div>
 
                         <div className="col-lg-3 col-md-4 col-sm-6">

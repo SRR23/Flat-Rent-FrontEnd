@@ -6,6 +6,13 @@
     z-index: 1000; /* Ensures it stays above other elements */
 }
 
+.fixed-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+  }
+  
+
 .loader-container {
     position: fixed;
     top: 0;

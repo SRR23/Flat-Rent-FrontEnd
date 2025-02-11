@@ -8,9 +8,9 @@ const Header = () => {
                         <nav className="navbar navbar-expand-lg bg-white navbar-light py-0 px-4 fixed-top shadow-sm custom-navbar">
                             <Link to="/" className="navbar-brand d-flex align-items-center text-center">
                                 <div className="icon p-2 me-2">
-                                    <img className="img-fluid" src="/img/icon-deal.png" alt="Icon" style={{ width: "30px", height: "30px" }} />
+                                    <img className="img-fluid" src="/img/logo.jpeg" alt="Icon" style={{ width: "50px", height: "50px" }} />
                                 </div>
-                                <h1 className="m-0 text-primary">EasyRent</h1>
+                                {/* <h1 className="m-0 text-primary">EasyRent</h1> */}
                             </Link>
                             <button type="button" className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                                 <span className="navbar-toggler-icon"></span>
