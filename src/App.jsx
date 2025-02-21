@@ -7,6 +7,8 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import ScrollToTop from './components/ScrollToTop'; // Import ScrollToTop
 import FlatDetailsPage from './pages/FlatDetailsPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
       <ScrollToTop>  {/* Ensure this component is added here */}
       <Routes>
         <Route element={<LayOut />}>
+          <Route path="/login/" element={<LoginPage />} />
+          <Route path="/register/" element={<RegisterPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/flat-list/" element={<FlatListPage />} />
           <Route path="/flat-details/" element={<FlatDetailsPage />} />

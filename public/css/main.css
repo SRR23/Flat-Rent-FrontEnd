@@ -3,7 +3,7 @@
     max-width: 1320px; /* Match your container-xxl width */
     left: 50%;
     transform: translateX(-50%); /* Center it */
-    z-index: 1000; /* Ensures it stays above other elements */
+    z-index: 1000; /*Ensures it stays above other elements */
 }
 
 .fixed-img {
@@ -11,6 +11,11 @@
     height: 250px;
     object-fit: cover;
   }
+
+.detail-img {
+    width: 100%;
+    height: 400px
+}
   
 
 .loader-container {
@@ -39,4 +44,30 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Modal */
+.modal-dialog {
+    max-width: 400px; /* Reduce width */
+    width: 90%; /* Make it responsive */
+}
+
+.modal-content {
+    border-radius: 10px; /* Smooth edges */
+    padding: 20px; /* Better spacing */
+}
+
+.modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    z-index: 1100;
+}
+
 
