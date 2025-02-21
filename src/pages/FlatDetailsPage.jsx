@@ -72,25 +72,25 @@ const FlatDetailsPage = () => {
           <div className="row g-5 align-items-center" ref={firstRowRef}>
             <div className="col-lg-6">
               <Carousel showThumbs={false} infiniteLoop autoPlay>
-                <div className="detail-img">
+                <div>
                   <img
                     src="/img/p1.jpg"
                     alt="Flat Image 1"
-                    className="img-fluid"
+                    className="img-fluid detail-img"
                   />
                 </div>
-                <div className="detail-img">
+                <div>
                   <img
                     src="/img/p2.jpg"
                     alt="Flat Image 2"
-                    className="img-fluid"
+                    className="img-fluid detail-img"
                   />
                 </div>
-                <div className="detail-img">
+                <div>
                   <img
                     src="/img/p3.jpg"
                     alt="Flat Image 3"
-                    className="img-fluid"
+                    className="img-fluid detail-img"
                   />
                 </div>
               </Carousel>
