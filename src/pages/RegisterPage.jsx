@@ -27,7 +27,7 @@ const RegisterPage = () => {
                                         checked={userType === "customer"} 
                                         onChange={() => setUserType("customer")} 
                                     />
-                                    <label className="form-check-label" htmlFor="customer">Customer</label>
+                                    <label className="form-check-label" htmlFor="customer">Tenants</label>
                                 </div>
                                 <div className="form-check">
                                     <input 
@@ -61,7 +61,7 @@ const RegisterPage = () => {
                                     <div className="mb-3">
                                         <input type="password" className="form-control" placeholder="Confirm Password" />
                                     </div>
-                                    <button className="btn btn-primary w-100" type="submit">Register as Customer</button>
+                                    <button className="btn btn-primary w-100" type="submit">Register as Tenants</button>
                                 </form>
                             )}
 
