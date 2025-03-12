@@ -35,7 +35,7 @@ const ContactPage = () => {
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={messageIndex} // Key ensures correct animation switching
-                                    className="position-absolute text-center text-primary fw-bold"
+                                    className="position-absolute text-center text-primary fw-bold animated-message"
                                     style={{ fontSize: "2rem", width: "100%" }}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -135,6 +135,7 @@ const ContactPage = () => {
                                 </form>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>

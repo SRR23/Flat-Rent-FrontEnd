@@ -46,6 +46,8 @@
     100% { transform: rotate(360deg); }
 }
 
+
+
 /* Modal */
 .modal-dialog {
     max-width: 400px; /* Reduce width */
@@ -70,5 +72,12 @@
     background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
     z-index: 1100;
 }
+  
 
 
+@media (max-width: 768px) {
+    .animated-message {
+      margin-top: 50px; /* Adjust as needed */
+    }
+  }
+  

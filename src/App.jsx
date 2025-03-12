@@ -9,6 +9,8 @@ import ScrollToTop from './components/ScrollToTop'; // Import ScrollToTop
 import FlatDetailsPage from './pages/FlatDetailsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import AddFlatPage from './pages/AddFlatPage';
+import UserProfilePage from './pages/UserProfilePage';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           <Route path="/flat-details/" element={<FlatDetailsPage />} />
           <Route path="/about/" element={<AboutPage />} />
           <Route path="/contact/" element={<ContactPage />} />
+          <Route path="/add-flat/" element={<AddFlatPage />} />
+          <Route path="/user-profile/" element={<UserProfilePage />} />
         </Route>
       </Routes>
       </ScrollToTop>

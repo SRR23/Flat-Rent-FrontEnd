@@ -12,7 +12,7 @@ const ScrollToTop = ({ children }) => {
         // Simulate a short loading time (1.5 seconds)
         const timer = setTimeout(() => {
             setLoading(false);
-        }, 1500);
+        }, 2000);
 
         return () => clearTimeout(timer);
     }, [location]);
