@@ -10,11 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.68.0",
+    "axios": "^1.8.3",
     "bootstrap": "^5.3.3",
     "framer-motion": "^12.4.1",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
+    "react-loading-skeleton": "^3.5.0",
+    "react-modal": "^3.16.3",
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^7.1.5"
   },
