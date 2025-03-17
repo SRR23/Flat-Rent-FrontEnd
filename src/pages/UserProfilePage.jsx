@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import myaxios from "../uitils/myaxios";
 
-const messages = ["Manage Your Profile!", "Keep Your Information Updated!"];
+const messages = ["Manage Your Profile!", "Keep Bio Updated!"];
 
 const UserProfilePage = () => {
     const [profile, setProfile] = useState(null);

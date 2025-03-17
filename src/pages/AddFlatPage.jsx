@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import myaxios from "../uitils/myaxios";
 
-const messages = ["Add Your Flat Information!", "Provide Complete Details!"];
+const messages = ["Add Flat Information!", "Provide Complete Details!"];
 
 const AddFlatPage = () => {
   const [messageIndex, setMessageIndex] = useState(0);
