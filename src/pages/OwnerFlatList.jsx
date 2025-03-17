@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import myaxios from "../uitils/myaxios";
 
 const messages = [
-  "Manage Your Flats Efficiently!",
-  "Edit or Remove Listings Easily!",
+  "Manage Flats Efficiently!",
+  "Edit or Remove Easily!",
 ];
 
 const OwnerFlatList = () => {

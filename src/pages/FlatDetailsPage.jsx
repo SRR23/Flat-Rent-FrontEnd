@@ -314,8 +314,9 @@ const FlatDetailsPage = () => {
                 <p>
                   <strong>Email:</strong> {flat.owner?.email}
                 </p>
-                
 
+                <hr />
+                
                 <h6>
                   <strong>Send a Message:</strong>
                 </h6>

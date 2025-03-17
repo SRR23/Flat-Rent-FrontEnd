@@ -7,6 +7,7 @@ const HomePage = () => {
   const [flats, setFlats] = useState([]);
   const [categories, setCategories] = useState([]); // State for categories
   const [loading, setLoading] = useState(true);
+  const [catloading, catsetLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -28,9 +29,11 @@ const HomePage = () => {
       .get("categories/") // Update with correct API endpoint
       .then((response) => {
         setCategories(response.data);
+        catsetLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
+        catsetLoading(false);
       });
   }, []);
 
@@ -93,6 +96,7 @@ const HomePage = () => {
         </div>
       </div>
 
+      {/* Flat Types */}
       <div className="container-xxl py-5">
         <div className="container">
           <div
@@ -110,19 +114,56 @@ const HomePage = () => {
           </div>
           <div className="row">
             <div className="d-flex justify-content-center gap-4 flex-wrap">
-            {categories.map((category, index) => (
-                <div key={index} className="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay={`${0.1 * (index + 1)}s`}>
-                  <Link to={`/category-flats/?category=${category.id}`} className="cat-item d-block bg-light text-center rounded p-3">
-                    <div className="rounded p-4">
-                      <div className="icon mb-3">
-                        <img className="img-fluid" src="img/icon-house.png" alt={category.title} />
+              {catloading
+                ? // Skeleton Loaders
+                  [...Array(3)].map((_, index) => (
+                    <div key={index} className="col-lg-3 col-sm-6">
+                      <div className="cat-item d-block bg-light text-center rounded p-3">
+                        <div className="rounded p-4">
+                          <div
+                            className="skeleton-box"
+                            style={{
+                              width: "60px",
+                              height: "60px",
+                              margin: "auto",
+                            }}
+                          ></div>
+                          <div
+                            className="skeleton-box"
+                            style={{
+                              width: "100px",
+                              height: "20px",
+                              margin: "10px auto",
+                            }}
+                          ></div>
+                        </div>
                       </div>
-                      <h6>{category.title}</h6>
-                      {/* <span>{category.property_count} Properties</span> */}
                     </div>
-                  </Link>
-                </div>
-              ))}
+                  ))
+                : // Actual Categories
+                  categories.map((category, index) => (
+                    <div
+                      key={index}
+                      className="col-lg-3 col-sm-6 wow fadeInUp"
+                      data-wow-delay={`${0.1 * (index + 1)}s`}
+                    >
+                      <Link
+                        to={`/category-flats/?category=${category.id}`}
+                        className="cat-item d-block bg-light text-center rounded p-3"
+                      >
+                        <div className="rounded p-4">
+                          <div className="icon mb-3">
+                            <img
+                              className="img-fluid"
+                              src="img/icon-house.png"
+                              alt={category.title}
+                            />
+                          </div>
+                          <h6>{category.title}</h6>
+                        </div>
+                      </Link>
+                    </div>
+                  ))}
             </div>
           </div>
         </div>
