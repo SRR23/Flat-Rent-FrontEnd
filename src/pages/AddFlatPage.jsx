@@ -119,39 +119,111 @@ const AddFlatPage = () => {
     setMessage("");
 
     try {
-      const submitData = new FormData();
-      submitData.append("category_id", formData.category);
-      submitData.append("location_id", formData.location);
-      submitData.append("title", formData.title);
-      submitData.append("washroom", formData.washroom);
-      submitData.append("commode", formData.commode);
-      submitData.append("water_supply", formData.water_supply);
-      submitData.append("floor", formData.floor);
-      submitData.append("tiles", formData.tiles);
-      submitData.append("kitchen", formData.kitchen);
-      submitData.append("cctv", formData.cctv);
-      submitData.append("roof_top_uses", formData.roof_top_uses);
-      submitData.append("garage", formData.garage);
-
-      formData.images.forEach((file, index) => {
-        submitData.append(`image_${index + 1}`, file);
-      });
-
-      if (formType === "family") {
-        submitData.append("family_details", JSON.stringify([formData.family_details]));
-      } else if (formType === "bachelor") {
-        submitData.append("bachelor_details", JSON.stringify([formData.bachelor_details]));
-      } else if (formType === "shop") {
-        submitData.append("shop_details", JSON.stringify([formData.shop_details]));
+      // Basic client-side validation
+      if (!formData.category || !formData.location || !formData.title) {
+        setMessage("Please fill in all required fields: Category, Location, and Title.");
+        setLoading(false);
+        return;
       }
 
+      // Ensure the selected category matches the formType
+      const selectedCategory = categories.find(cat => cat.id === parseInt(formData.category));
+      if (selectedCategory) {
+        if (formType === "family" && selectedCategory.title !== "Family") {
+          setMessage("Selected category must be 'Family' for family details.");
+          setLoading(false);
+          return;
+        }
+        if (formType === "bachelor" && selectedCategory.title !== "Bachelor") {
+          setMessage("Selected category must be 'Bachelor' for bachelor details.");
+          setLoading(false);
+          return;
+        }
+        if (formType === "shop" && selectedCategory.title !== "Shop") {
+          setMessage("Selected category must be 'Shop' for shop details.");
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Always use JSON format to match the exact payload structure
+      const submitData = {
+        category_id: parseInt(formData.category),
+        location_id: parseInt(formData.location),
+        title: formData.title,
+        washroom: parseInt(formData.washroom) || 0,
+        commode: formData.commode,
+        water_supply: formData.water_supply,
+        floor: formData.floor,
+        tiles: formData.tiles,
+        kitchen: formData.kitchen,
+        cctv: formData.cctv,
+        roof_top_uses: formData.roof_top_uses,
+        garage: formData.garage,
+        image_1: null,
+        image_2: null,
+        image_3: null,
+        image_4: null,
+        image_5: null,
+      };
+
+      // Add specific details based on form type
+      if (formType === "family") {
+        if (!formData.family_details.bed_room || !formData.family_details.rent || !formData.family_details.address) {
+          setMessage("Please fill in all required family details: Bed Room, Rent, and Address.");
+          setLoading(false);
+          return;
+        }
+        submitData.family_details = [{
+          bed_room: parseInt(formData.family_details.bed_room) || 0,
+          dining_room: formData.family_details.dining_room,
+          drawing_room: formData.family_details.drawing_room,
+          balcony: formData.family_details.balcony,
+          rent: parseFloat(formData.family_details.rent) || 0,
+          address: formData.family_details.address,
+        }];
+      } else if (formType === "bachelor") {
+        if (!formData.bachelor_details.available_seats || !formData.bachelor_details.dining_charge ||
+          !formData.bachelor_details.meal_rate_range || !formData.bachelor_details.extra_cost_range ||
+          !formData.bachelor_details.expected_total_cost || !formData.bachelor_details.total_members) {
+          setMessage("Please fill in all required bachelor details.");
+          setLoading(false);
+          return;
+        }
+        submitData.bachelor_details = [{
+          available_seats: formData.bachelor_details.available_seats,
+          dining_charge: parseFloat(formData.bachelor_details.dining_charge) || 0,
+          meal_rate_range: formData.bachelor_details.meal_rate_range,
+          extra_cost_range: formData.bachelor_details.extra_cost_range,
+          expected_total_cost: parseFloat(formData.bachelor_details.expected_total_cost) || 0,
+          total_members: formData.bachelor_details.total_members,
+          khala_facility: formData.bachelor_details.khala_facility,
+        }];
+      } else if (formType === "shop") {
+        if (!formData.shop_details.rent || !formData.shop_details.square_feet || !formData.shop_details.address) {
+          setMessage("Please fill in all required shop details: Rent, Square Feet, and Address.");
+          setLoading(false);
+          return;
+        }
+        submitData.shop_details = [{
+          rent: parseFloat(formData.shop_details.rent) || 0,
+          square_feet: parseInt(formData.shop_details.square_feet) || 0,
+          preaching_space: formData.shop_details.preaching_space,
+          address: formData.shop_details.address,
+        }];
+      }
+
+      // Log the payload for debugging
+      console.log("Payload being sent:", JSON.stringify(submitData, null, 2));
+
       const response = await myaxios.post("/flats/create/", submitData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "application/json" }
       });
 
       console.log("Server Response:", response.data);
       setMessage("Flat added successfully!");
 
+      // Reset form
       setFormData({
         category: "",
         location: "",
@@ -194,11 +266,15 @@ const AddFlatPage = () => {
     } catch (error) {
       if (error.response) {
         console.error("Error Status:", error.response.status);
-        console.error("Error Data:", error.response.data);
+        console.error("Error Data:", JSON.stringify(error.response.data, null, 2));
+        const errorMessage = error.response.data.non_field_errors?.[0] ||
+          error.response.data.detail ||
+          "Unknown error. Please check the form data.";
+        setMessage(`Error adding flat: ${errorMessage}`);
       } else {
         console.error("Request Error:", error.message);
+        setMessage("Error adding flat: Network error. Please try again.");
       }
-      setMessage("Error adding flat. Try again.");
     }
 
     setLoading(false);
