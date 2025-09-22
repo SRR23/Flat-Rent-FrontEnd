@@ -3,7 +3,7 @@ import axios from "axios";
 const BASE_URL = "https://flat-rent-api.onrender.com/api";
 // http://localhost:8000/admin/
 // https://flat-rent-api.onrender.com/api
-// Create main axios instance
+
 const myaxios = axios.create({
     baseURL: BASE_URL,
     headers: {
