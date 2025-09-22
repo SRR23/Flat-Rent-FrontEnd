@@ -13,12 +13,12 @@ const OwnerFlatList = () => {
   const [flats, setFlats] = useState([]);
   const [categories, setCategories] = useState([]);
   const [locations, setLocations] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
   const [selectedFlat, setSelectedFlat] = useState(null);
   const [formData, setFormData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imagePreviews, setImagePreviews] = useState({});
-  const [buttonLoading, setButtonLoading] = useState(false); // Loading state for the button
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,43 +63,73 @@ const OwnerFlatList = () => {
 
   const openModal = (flat) => {
     setSelectedFlat(flat);
-    setFormData({ ...flat });
+    setFormData({
+      ...flat,
+      category: flat.category.id,
+      location: flat.location.id,
+      washroom: flat.washroom || "",
+      floor: flat.floor || "",
+      bed_room: flat.bed_room || "",
+      rent: flat.rent || "",
+      address: flat.address || "",
+      commode: flat.commode || false,
+      water_supply: flat.water_supply || false,
+      tiles: flat.tiles || false,
+      kitchen: flat.kitchen || false,
+      cctv: flat.cctv || false,
+      roof_top_uses: flat.roof_top_uses || false,
+      garage: flat.garage || false,
+      dining_room: flat.dining_room || false,
+      drawing_room: flat.drawing_room || false,
+      balcony: flat.balcony || false,
+    });
+    setImagePreviews({
+      image_1: flat.image_1 ? `https://res.cloudinary.com/drgz0wgom/${flat.image_1}` : "",
+      image_2: flat.image_2 ? `https://res.cloudinary.com/drgz0wgom/${flat.image_2}` : "",
+      image_3: flat.image_3 ? `https://res.cloudinary.com/drgz0wgom/${flat.image_3}` : "",
+      image_4: flat.image_4 ? `https://res.cloudinary.com/drgz0wgom/${flat.image_4}` : "",
+      image_5: flat.image_5 ? `https://res.cloudinary.com/drgz0wgom/${flat.image_5}` : "",
+    });
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedFlat(null);
+    setImagePreviews({});
   };
 
   const handleChange = (e) => {
-    const { name, type, value } = e.target;
+    const { name, type, value, checked, files } = e.target;
 
-    // List of fields that should be treated as integers
-    const integerFields = ["room", "bath", "flat_size", "kitchen", "price"];
-
-    if (integerFields.includes(name)) {
-      // Convert to integer, or use empty string if value is empty
+    if (type === "checkbox") {
       setFormData((prevData) => ({
         ...prevData,
-        [name]: value ? parseInt(value, 10) : "", // Handle empty values gracefully
+        [name]: checked,
       }));
     } else if (type === "file") {
-      const file = e.target.files[0];
+      const file = files[0];
       setFormData((prevData) => ({
         ...prevData,
-        [name]: file, // Store file object
+        [name]: file,
       }));
 
       // Generate a preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreviews((prevPreviews) => ({
+            ...prevPreviews,
+            [name]: reader.result,
+          }));
+        };
+        reader.readAsDataURL(file);
+      } else {
         setImagePreviews((prevPreviews) => ({
           ...prevPreviews,
-          [name]: reader.result,
+          [name]: null,
         }));
-      };
-      reader.readAsDataURL(file);
+      }
     } else {
       setFormData((prevData) => ({
         ...prevData,
@@ -109,26 +139,48 @@ const OwnerFlatList = () => {
   };
 
   const handleUpdate = async () => {
-    setButtonLoading(true); // Set loading state before making the API request
+    setButtonLoading(true);
     try {
       const formDataToSend = new FormData();
 
       // Append text fields
-      Object.keys(formData).forEach((key) => {
-        if (formData[key] !== null && formData[key] !== undefined) {
+      formDataToSend.append("category_id", formData.category);
+      formDataToSend.append("location_id", formData.location);
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("washroom", formData.washroom || 0);
+      formDataToSend.append("commode", formData.commode);
+      formDataToSend.append("water_supply", formData.water_supply);
+      formDataToSend.append("floor", formData.floor);
+      formDataToSend.append("tiles", formData.tiles);
+      formDataToSend.append("kitchen", formData.kitchen);
+      formDataToSend.append("cctv", formData.cctv);
+      formDataToSend.append("roof_top_uses", formData.roof_top_uses);
+      formDataToSend.append("garage", formData.garage);
+      formDataToSend.append("bed_room", formData.bed_room || 0);
+      formDataToSend.append("dining_room", formData.dining_room);
+      formDataToSend.append("drawing_room", formData.drawing_room);
+      formDataToSend.append("balcony", formData.balcony);
+      formDataToSend.append("rent", formData.rent || 0);
+      formDataToSend.append("address", formData.address);
+
+      // Append image fields
+      ["image_1", "image_2", "image_3", "image_4", "image_5"].forEach((key) => {
+        if (formData[key] instanceof File) {
           formDataToSend.append(key, formData[key]);
+        } else {
+          formDataToSend.append(key, formData[key] || "");
         }
       });
 
-      // Send request with FormData
-      await myaxios.put(`/owner/flats/${selectedFlat.id}/`, formDataToSend, {
+      // Send request
+      const response = await myaxios.put(`/owner/flats/${selectedFlat.id}/`, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // Update UI after successful edit
+      // Update UI
       setFlats(
         flats.map((flat) =>
-          flat.id === selectedFlat.id ? { ...flat, ...formData } : flat
+          flat.id === selectedFlat.id ? { ...flat, ...response.data } : flat
         )
       );
 
@@ -136,7 +188,7 @@ const OwnerFlatList = () => {
     } catch (error) {
       console.error("Error updating flat:", error);
     } finally {
-      setButtonLoading(false); // Reset button loading state after the API request is finished
+      setButtonLoading(false);
     }
   };
 
@@ -185,8 +237,7 @@ const OwnerFlatList = () => {
         <div className="container">
           <div className="row g-4">
             {loading
-              ? // Show skeleton loader when loading is true
-                [...Array(6)].map((_, index) => (
+              ? [...Array(6)].map((_, index) => (
                   <div key={index} className="col-lg-4 col-md-6">
                     <div className="property-item rounded overflow-hidden">
                       <div className="skeleton-image"></div>
@@ -198,8 +249,7 @@ const OwnerFlatList = () => {
                     </div>
                   </div>
                 ))
-              : // Show actual flats once loading is false
-                flats.map((flat) => (
+              : flats.map((flat) => (
                   <div key={flat.id} className="col-lg-4 col-md-6">
                     <div className="property-item rounded overflow-hidden">
                       <div className="position-relative overflow-hidden">
@@ -207,41 +257,41 @@ const OwnerFlatList = () => {
                           <img
                             className="img-fluid fixed-img"
                             src={`https://res.cloudinary.com/drgz0wgom/${flat.image_1}`}
-                            alt="Flat"
+                            alt={flat.title}
                           />
                         </Link>
                         <div className="bg-primary rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3">
                           For Rent
                         </div>
                         <div className="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
-                          {flat.category_title}
+                          {flat.category.title}
                         </div>
                       </div>
                       <div className="p-4 pb-0">
-                        <h5 className="text-primary mb-3">${flat.price}</h5>
+                        <h5 className="text-primary mb-3">${flat.rent}</h5>
                         <Link
                           className="d-block h5 mb-2"
-                          to={`/flat-details/${flat.slug}`}
+                          to={`/flat-details/${flat.id}`}
                         >
                           {flat.title}
                         </Link>
                         <p>
                           <i className="fa fa-map-marker-alt text-primary me-2"></i>
-                          {flat.location_title}
+                          {flat.location.title}
                         </p>
                       </div>
                       <div className="d-flex border-top">
                         <small className="flex-fill text-center border-end py-2">
                           <i className="fa fa-ruler-combined text-primary me-2"></i>
-                          {flat.flat_size} Sqft
+                          {flat.square_feet || "N/A"} Sqft
                         </small>
                         <small className="flex-fill text-center border-end py-2">
                           <i className="fa fa-bed text-primary me-2"></i>
-                          {flat.room} Bed
+                          {flat.bed_room || "N/A"} Bed
                         </small>
                         <small className="flex-fill text-center py-2">
                           <i className="fa fa-bath text-primary me-2"></i>
-                          {flat.bath} Bath
+                          {flat.washroom} Bath
                         </small>
                       </div>
                       <div className="d-flex justify-content-between p-3">
@@ -265,21 +315,20 @@ const OwnerFlatList = () => {
         </div>
       </div>
 
-      {/* Custom React Modal */}
       {isModalOpen && (
         <div
           className="modal-overlay"
           style={{
             position: "fixed",
-            top: "10vh", // Moves modal below navbar
+            top: "10vh",
             left: 0,
             width: "100vw",
-            height: "90vh", // Prevents overflow
+            height: "90vh",
             backgroundColor: "rgba(0, 0, 0, 0.6)",
             zIndex: 1050,
             display: "flex",
             justifyContent: "center",
-            alignItems: "flex-start", // Aligns modal properly
+            alignItems: "flex-start",
           }}
         >
           <div
@@ -289,20 +338,17 @@ const OwnerFlatList = () => {
               padding: "20px",
               width: "90%",
               maxWidth: "1200px",
-              maxHeight: "80vh", // Limits height so it fits well
+              maxHeight: "80vh",
               overflowY: "auto",
               borderRadius: "10px",
             }}
           >
             <h5 className="text-center mb-3">Edit Flat Details</h5>
 
-            {/* Modal Form */}
-            {/* Modal Form */}
             <form>
-              {/* Title and Price */}
-              <div className="d-flex justify-content-between">
-                <div style={{ width: "48%" }}>
-                  <label>Title:</label>
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <label className="form-label">Title:</label>
                   <input
                     type="text"
                     name="title"
@@ -311,30 +357,25 @@ const OwnerFlatList = () => {
                     onChange={handleChange}
                   />
                 </div>
-                <div style={{ width: "48%" }}>
-                  <label>Price:</label>
+                <div className="col-md-6">
+                  <label className="form-label">Rent:</label>
                   <input
-                    type="text"
-                    name="price"
+                    type="number"
+                    name="rent"
                     className="form-control"
-                    value={formData.price}
+                    value={formData.rent}
                     onChange={handleChange}
                   />
                 </div>
-              </div>
-
-              {/* Location and category */}
-              <div className="d-flex justify-content-between mt-2">
-                <div style={{ width: "48%" }}>
-                  <label>Select Category:</label>
+                <div className="col-md-6">
+                  <label className="form-label">Category:</label>
                   <select
                     name="category"
                     className="form-control"
-                    style={{ cursor: "pointer" }}
-                    value={formData.category || ""}
+                    value={formData.category}
                     onChange={handleChange}
                   >
-                    {/* <option value="">Select Category</option> */}
+                    <option value="">Select Category</option>
                     {categories.map((cat) => (
                       <option key={cat.id} value={cat.id}>
                         {cat.title}
@@ -342,17 +383,15 @@ const OwnerFlatList = () => {
                     ))}
                   </select>
                 </div>
-
-                <div style={{ width: "48%" }}>
-                  <label>Select Location:</label>
+                <div className="col-md-6">
+                  <label className="form-label">Location:</label>
                   <select
                     name="location"
                     className="form-control"
-                    style={{ cursor: "pointer" }}
-                    value={formData.location || ""}
+                    value={formData.location}
                     onChange={handleChange}
                   >
-                    {/* <option value="">Select Location</option> */}
+                    <option value="">Select Location</option>
                     {locations.map((loc) => (
                       <option key={loc.id} value={loc.id}>
                         {loc.title}
@@ -360,59 +399,74 @@ const OwnerFlatList = () => {
                     ))}
                   </select>
                 </div>
-              </div>
-
-              {/* Rooms and Bathrooms */}
-              <div className="d-flex justify-content-between mt-2">
-                <div style={{ width: "48%" }}>
-                  <label>Size (Sqft):</label>
+                <div className="col-md-6">
+                  <label className="form-label">Washroom:</label>
                   <input
-                    type="text"
-                    name="flat_size"
+                    type="number"
+                    name="washroom"
                     className="form-control"
-                    value={formData.flat_size}
+                    value={formData.washroom}
                     onChange={handleChange}
                   />
                 </div>
-
-                <div style={{ width: "48%" }}>
-                  <label>Rooms:</label>
+                <div className="col-md-6">
+                  <label className="form-label">Floor:</label>
                   <input
                     type="text"
-                    name="room"
+                    name="floor"
                     className="form-control"
-                    value={formData.room}
+                    value={formData.floor}
                     onChange={handleChange}
                   />
                 </div>
-              </div>
-
-              <div className="d-flex justify-content-between mt-2">
-                <div style={{ width: "48%" }}>
-                  <label>Bathrooms:</label>
+                <div className="col-md-6">
+                  <label className="form-label">Bed Rooms:</label>
                   <input
-                    type="text"
-                    name="bath"
+                    type="number"
+                    name="bed_room"
                     className="form-control"
-                    value={formData.bath}
+                    value={formData.bed_room}
                     onChange={handleChange}
                   />
                 </div>
-                <div style={{ width: "48%" }}>
-                  <label>Kitchen:</label>
+                <div className="col-md-6">
+                  <label className="form-label">Address:</label>
                   <input
                     type="text"
-                    name="kitchen"
+                    name="address"
                     className="form-control"
-                    value={formData.kitchen}
+                    value={formData.address}
                     onChange={handleChange}
                   />
                 </div>
-              </div>
-
-              {/* Image Uploads with Preview */}
-              <div className="row g-3 mt-3">
-                {[1, 2, 3, 4].map((num) => (
+                <div className="col-12">
+                  <div className="d-flex flex-wrap gap-3">
+                    {[
+                      { field: "commode", label: "Commode (High)" },
+                      { field: "water_supply", label: "Water Supply (24/7)" },
+                      { field: "tiles", label: "Tiles" },
+                      { field: "kitchen", label: "Kitchen" },
+                      { field: "cctv", label: "CCTV (24/7)" },
+                      { field: "roof_top_uses", label: "Roof Top Uses" },
+                      { field: "garage", label: "Garage" },
+                      { field: "dining_room", label: "Dining Room" },
+                      { field: "drawing_room", label: "Drawing Room" },
+                      { field: "balcony", label: "Balcony" },
+                    ].map(({ field, label }) => (
+                      <div key={field} className="form-check me-2">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          name={field}
+                          checked={formData[field]}
+                          onChange={handleChange}
+                        />
+                        <label className="form-check-label">{label}</label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {[1, 2, 3, 4, 5].map((num) => (
                   <div key={num} className="col-md-6">
                     <div className="p-3 border rounded shadow-sm bg-light text-center">
                       <label className="form-label fw-bold">Image {num}</label>
@@ -420,27 +474,20 @@ const OwnerFlatList = () => {
                         type="file"
                         name={`image_${num}`}
                         className="form-control"
-                        style={{ cursor: "pointer" }}
                         onChange={handleChange}
+                        accept="image/*"
                       />
-                      {(imagePreviews[`image_${num}`] ||
-                        formData[`image_${num}`]) && (
+                      {imagePreviews[`image_${num}`] && (
                         <div className="mt-2">
                           <img
-                            src={
-                              imagePreviews[`image_${num}`] ||
-                              `https://res.cloudinary.com/drgz0wgom/${
-                                formData[`image_${num}`]
-                              }`
-                            }
+                            src={imagePreviews[`image_${num}`]}
                             alt={`Image ${num}`}
                             className="img-thumbnail"
                             style={{
                               width: "100%",
-                              height: "400px",
+                              height: "200px",
                               objectFit: "cover",
                               borderRadius: "8px",
-                              boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
                             }}
                           />
                         </div>
@@ -450,78 +497,19 @@ const OwnerFlatList = () => {
                 ))}
               </div>
 
-              {/* Features */}
-              <div className="d-flex flex-wrap justify-content-between mt-2">
-                {["feature_1", "feature_2", "feature_3", "feature_4"].map(
-                  (feature, index) => (
-                    <div key={feature} style={{ width: "48%" }}>
-                      <label>Feature {index + 1}:</label>
-                      <input
-                        type="text"
-                        name={feature}
-                        className="form-control"
-                        value={formData[feature]}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  )
-                )}
-              </div>
-
-              {/* Feature 5 and Description 1 */}
-              <div className="d-flex justify-content-between mt-2">
-                <div style={{ width: "48%" }}>
-                  <label>Feature 5:</label>
-                  <input
-                    type="text"
-                    name="feature_5"
-                    className="form-control"
-                    value={formData.feature_5}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div style={{ width: "48%" }}>
-                  <label>Description 1:</label>
-                  <input
-                    type="text"
-                    name="description_1"
-                    className="form-control"
-                    value={formData.description_1}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              {/* Descriptions */}
-              <div className="d-flex flex-wrap justify-content-between mt-2">
-                {[
-                  "description_2",
-                  "description_3",
-                  "description_4",
-                  "description_5",
-                ].map((desc, index) => (
-                  <div key={desc} style={{ width: "48%" }}>
-                    <label>Description {index + 2}:</label>
-                    <input
-                      type="text"
-                      name={desc}
-                      className="form-control"
-                      value={formData[desc]}
-                      onChange={handleChange}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* Modal Footer */}
               <div className="d-flex justify-content-end mt-3">
-                <button className="btn btn-secondary me-2" onClick={closeModal}>
+                <button
+                  type="button"
+                  className="btn btn-secondary me-2"
+                  onClick={closeModal}
+                >
                   Close
                 </button>
                 <button
-                  className="btn btn-success w-100 py-3"
+                  type="button"
+                  className="btn btn-success"
                   onClick={handleUpdate}
-                  disabled={buttonLoading} // Disable the button while loading
+                  disabled={buttonLoading}
                 >
                   {buttonLoading ? "Saving Changes..." : "Save Changes"}
                 </button>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://flat-rent-api.onrender.com/api";
 // http://localhost:8000/admin/
 // https://flat-rent-api.onrender.com/api
 // Create main axios instance
@@ -72,79 +72,3 @@ myaxios.interceptors.response.use(
 );
 
 export default myaxios;
-
-
-
-
-
-
-
-
-
-
-
-
-
-{/*
-import axios from "axios";
-
-const myaxios = axios.create({
-    baseURL: "https://flat-rent-api.onrender.com/api",
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
-
-myaxios.interceptors.request.use(config => {
-    const token = localStorage.getItem('token');
-    console.log("Sending token:", token);  // Debugging
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
-// Interceptor for handling token expiration
-myaxios.interceptors.response.use(
-    response => response,
-    async error => {
-        const originalRequest = error.config;
-        
-        if (error.response && error.response.status === 401) {
-            const refreshToken = localStorage.getItem('refresh_token');
-            
-            if (refreshToken && !originalRequest._retry) {
-                originalRequest._retry = true;
-
-                try {
-                    console.log("Refreshing token...");
-                    const response = await myaxios.post('/token/refresh/', {
-                        refresh: refreshToken,
-                    }, {
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-
-                    const newAccessToken = response.data.access;
-                    localStorage.setItem('token', newAccessToken);
-
-                    originalRequest.headers = {
-                        ...originalRequest.headers,
-                        Authorization: `Bearer ${newAccessToken}`,
-                    };
-
-                    return myaxios(originalRequest);
-                } catch (err) {
-                    console.error('Token refresh failed:', err);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    localStorage.removeItem('refresh_token');
-                    window.location.href = '/login/';
-                }
-            }
-        }
-        return Promise.reject(error);
-    }
-);
-
-export default myaxios;
-*/}

@@ -156,12 +156,6 @@ const RenterBookingList = () => {
                         </small>
                       </div>
                       <div className="d-flex justify-content-between p-3">
-                        {/* <button
-                          className="btn btn-warning"
-                          onClick={() => openModal(flat)}
-                        >
-                          Edit
-                        </button> */}
                         <button
                           className="btn btn-danger"
                           onClick={() => handleDelete(flat.slug)}

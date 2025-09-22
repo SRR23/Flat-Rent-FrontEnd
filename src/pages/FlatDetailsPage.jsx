@@ -149,16 +149,16 @@ const FlatDetailsPage = () => {
             <div className="row g-5 align-items-center" ref={firstRowRef}>
               <div className="col-lg-6">
                 <Carousel showThumbs={false} infiniteLoop autoPlay>
-                  {[1, 2, 3, 4].map((index) => (
-                    <div key={index}>
-                      <img
-                        src={`https://res.cloudinary.com/drgz0wgom/${
-                          flat[`image_${index}`]
-                        }`}
-                        alt={`Flat Image ${index}`}
-                        className="img-fluid detail-img"
-                      />
-                    </div>
+                  {[1, 2, 3, 4, 5].map((index) => (
+                    flat[`image_${index}`] && (
+                      <div key={index}>
+                        <img
+                          src={`https://res.cloudinary.com/drgz0wgom/${flat[`image_${index}`]}`}
+                          alt={`Flat Image ${index}`}
+                          className="img-fluid detail-img"
+                        />
+                      </div>
+                    )
                   ))}
                 </Carousel>
               </div>
@@ -169,27 +169,27 @@ const FlatDetailsPage = () => {
                 </p>
                 <p>
                   <i className="fa fa-bed text-primary me-3"></i>
-                  {flat.room} Bedrooms
+                  {flat.bed_room} Bedroom{flat.bed_room > 1 ? "s" : ""}
                 </p>
                 <p>
                   <i className="fa fa-bath text-primary me-3"></i>
-                  {flat.bath} Bathrooms
+                  {flat.washroom} Washroom{flat.washroom > 1 ? "s" : ""}
                 </p>
                 <p>
-                  <i className="fa fa-home text-primary me-3"></i>
-                  {flat.kitchen} Kitchen
-                </p>
-                <p>
-                  <i className="fa fa-ruler-combined text-primary me-3"></i>
-                  {flat.flat_size} Sqft
+                  <i className="fa fa-utensils text-primary me-3"></i>
+                  {flat.kitchen ? "Kitchen Available" : "No Kitchen"}
                 </p>
                 <p>
                   <i className="fa fa-map-marker-alt text-primary me-3"></i>
-                  {flat.location_title}
+                  {flat.location.title}
                 </p>
                 <p>
                   <i className="fa fa-dollar-sign text-primary me-3"></i>
-                  {flat.price} taka
+                  {flat.rent} taka
+                </p>
+                <p>
+                  <i className="fa fa-home text-primary me-3"></i>
+                  {flat.category.title} Flat
                 </p>
 
                 <button
@@ -207,7 +207,6 @@ const FlatDetailsPage = () => {
                     } else {
                       setShowModal(false);
                       alert("You need to log in to contact the owner.");
-                      // Optionally redirect to login page
                       navigate("/login");
                     }
                   }}
@@ -227,24 +226,64 @@ const FlatDetailsPage = () => {
                   <h2 className="mb-4 text-primary">🏡 Property Features</h2>
                   <p>
                     <i className="fa fa-check text-primary me-3"></i>
-                    {flat.feature_1}
+                    {flat.commode ? "Commode Available" : "No Commode"}
                   </p>
                   <p>
                     <i className="fa fa-check text-primary me-3"></i>
-                    {flat.feature_2}
+                    {flat.water_supply ? "Water Supply Available" : "No Water Supply"}
                   </p>
                   <p>
                     <i className="fa fa-check text-primary me-3"></i>
-                    {flat.feature_3}
+                    Floor: {flat.floor}
                   </p>
                   <p>
                     <i className="fa fa-check text-primary me-3"></i>
-                    {flat.feature_4}
+                    {flat.tiles ? "Tiled Flooring" : "No Tiles"}
                   </p>
                   <p>
                     <i className="fa fa-check text-primary me-3"></i>
-                    {flat.feature_5}
+                    {flat.cctv ? "CCTV Available" : "No CCTV"}
                   </p>
+                  <p>
+                    <i className="fa fa-check text-primary me-3"></i>
+                    {flat.roof_top_uses ? "Roof Top Access" : "No Roof Top Access"}
+                  </p>
+                  <p>
+                    <i className="fa fa-check text-primary me-3"></i>
+                    {flat.garage ? "Garage Available" : "No Garage"}
+                  </p>
+                  {flat.category.title === "Bachelor" && (
+                    <>
+                      <p>
+                        <i className="fa fa-check text-primary me-3"></i>
+                        Available Seats: {flat.available_seats}
+                      </p>
+                      <p>
+                        <i className="fa fa-check text-primary me-3"></i>
+                        Dining Charge: {flat.dining_charge} taka
+                      </p>
+                      <p>
+                        <i className="fa fa-check text-primary me-3"></i>
+                        Meal Rate Range: {flat.meal_rate_range} taka
+                      </p>
+                      <p>
+                        <i className="fa fa-check text-primary me-3"></i>
+                        Extra Cost Range: {flat.extra_cost_range} taka
+                      </p>
+                      <p>
+                        <i className="fa fa-check text-primary me-3"></i>
+                        Expected Total Cost: {flat.expected_total_cost} taka
+                      </p>
+                      <p>
+                        <i className="fa fa-check text-primary me-3"></i>
+                        Total Members: {flat.total_members}
+                      </p>
+                      <p>
+                        <i className="fa fa-check text-primary me-3"></i>
+                        {flat.khala_facility ? "Khala Facility Available" : "No Khala Facility"}
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -254,23 +293,23 @@ const FlatDetailsPage = () => {
                   <h2 className="mb-4 text-primary">📃 Property Description</h2>
                   <p>
                     <i className="fa fa-check text-primary me-3"></i>
-                    {flat.description_1}
+                    {flat.dining_room ? "Dining Room Available" : "No Dining Room"}
                   </p>
                   <p>
                     <i className="fa fa-check text-primary me-3"></i>
-                    {flat.description_2}
+                    {flat.drawing_room ? "Drawing Room Available" : "No Drawing Room"}
                   </p>
                   <p>
                     <i className="fa fa-check text-primary me-3"></i>
-                    {flat.description_3}
+                    {flat.balcony ? "Balcony Available" : "No Balcony"}
                   </p>
                   <p>
                     <i className="fa fa-check text-primary me-3"></i>
-                    {flat.description_4}
+                    Address: {flat.address}
                   </p>
                   <p>
                     <i className="fa fa-check text-primary me-3"></i>
-                    {flat.description_5}
+                    Created: {flat.created_at}
                   </p>
                   <button
                     className="btn btn-danger py-3 px-5 mt-3"

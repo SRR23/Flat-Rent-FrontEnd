@@ -2,12 +2,13 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import myaxios from "../uitils/myaxios";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Add carousel styles
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+
 const HomePage = () => {
   const [flats, setFlats] = useState([]);
-  const [categories, setCategories] = useState([]); // State for categories
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [catloading, catsetLoading] = useState(true);
+  const [catloading, setCatLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -26,14 +27,14 @@ const HomePage = () => {
 
     // Fetch categories
     myaxios
-      .get("categories/") // Update with correct API endpoint
+      .get("categories/")
       .then((response) => {
         setCategories(response.data);
-        catsetLoading(false);
+        setCatLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
-        catsetLoading(false);
+        setCatLoading(false);
       });
   }, []);
 
@@ -209,22 +210,22 @@ const HomePage = () => {
                     <div key={flat.id} className="col-lg-4 col-md-6">
                       <div className="property-item rounded overflow-hidden">
                         <div className="position-relative overflow-hidden">
-                          <Link to={`/flat-details/${flat.slug}`}>
+                          <Link to={`/flat-details/${flat.id}`}>
                             <img
                               className="img-fluid fixed-img"
                               src={`https://res.cloudinary.com/drgz0wgom/${flat.image_1}`}
-                              alt="Flat"
+                              alt={flat.title}
                             />
                           </Link>
                           <div className="bg-primary rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3">
                             For Rent
                           </div>
                           <div className="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
-                            {flat.category_title}
+                            {flat.category.title}
                           </div>
                         </div>
                         <div className="p-4 pb-0">
-                          <h5 className="text-primary mb-3">${flat.price}</h5>
+                          <h5 className="text-primary mb-3">${flat.rent}</h5>
                           <Link
                             className="d-block h5 mb-2"
                             to={`/flat-details/${flat.slug}`}
@@ -233,21 +234,21 @@ const HomePage = () => {
                           </Link>
                           <p>
                             <i className="fa fa-map-marker-alt text-primary me-2"></i>
-                            {flat.location_title}
+                            {flat.location.title}
                           </p>
                         </div>
                         <div className="d-flex border-top">
                           <small className="flex-fill text-center border-end py-2">
                             <i className="fa fa-ruler-combined text-primary me-2"></i>
-                            {flat.flat_size} Sqft
+                            {flat.square_feet || "N/A"} Sqft
                           </small>
                           <small className="flex-fill text-center border-end py-2">
                             <i className="fa fa-bed text-primary me-2"></i>
-                            {flat.room} Bed
+                            {flat.bed_room || "N/A"} Bed
                           </small>
                           <small className="flex-fill text-center py-2">
                             <i className="fa fa-bath text-primary me-2"></i>
-                            {flat.bath} Bath
+                            {flat.washroom} Bath
                           </small>
                         </div>
                       </div>

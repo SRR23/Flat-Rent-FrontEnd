@@ -7,33 +7,31 @@ import myaxios from "../uitils/myaxios";
 const messages = ["Find Your Dream Flat!", "Best Deals Available Now!"];
 
 const fetchFlatsBySearch = async (category, location, page) => {
-    const queryParams = new URLSearchParams();
-    if (category) queryParams.append("category", category);
-    if (location) queryParams.append("location", location);
-    queryParams.append("page", page);
-    
-    const response = await myaxios.get(`/search/?${queryParams.toString()}`);
-    return response.data;
-  };
+  const queryParams = new URLSearchParams();
+  if (category) queryParams.append("category", category);
+  if (location) queryParams.append("location", location);
+  queryParams.append("page", page);
   
+  const response = await myaxios.get(`/search/?${queryParams.toString()}`);
+  return response.data;
+};
 
 const SearchFlatPage = () => {
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const category = queryParams.get("category") || "";
-    const searchLocation = queryParams.get("location") || "";
-    
-    const [messageIndex, setMessageIndex] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const category = queryParams.get("category") || "";
+  const searchLocation = queryParams.get("location") || "";
   
-    const { data, error, isLoading } = useQuery({
-        queryKey: ["search-flats", category, searchLocation, currentPage],
-        queryFn: () => fetchFlatsBySearch(category, searchLocation, currentPage),
-        keepPreviousData: true,
-      });
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
-    const categoryTitle = data?.results?.[0]?.category_title || "Category";  // Default if undefined
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["search-flats", category, searchLocation, currentPage],
+    queryFn: () => fetchFlatsBySearch(category, searchLocation, currentPage),
+    keepPreviousData: true,
+  });
 
+  const categoryTitle = data?.results?.[0]?.category.title || "Category";
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -53,7 +51,7 @@ const SearchFlatPage = () => {
     if (currentPage <= 3) {
       return [1, 2, 3, 4, 5];
     }
-    if (currentPage >= totalPages - data.page_size) {
+    if (currentPage >= totalPages - 2) {
       return [
         totalPages - 4,
         totalPages - 3,
@@ -137,22 +135,22 @@ const SearchFlatPage = () => {
                 <div key={flat.id} className="col-lg-4 col-md-6">
                   <div className="property-item rounded overflow-hidden">
                     <div className="position-relative overflow-hidden">
-                      <Link to={`/flat-details/${flat.slug}`}>
+                      <Link to={`/flat-details/${flat.id}`}>
                         <img
                           className="img-fluid fixed-img"
                           src={`https://res.cloudinary.com/drgz0wgom/${flat.image_1}`}
-                          alt="Flat"
+                          alt={flat.title}
                         />
                       </Link>
                       <div className="bg-primary rounded text-white position-absolute start-0 top-0 m-4 py-1 px-3">
                         For Rent
                       </div>
                       <div className="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
-                        {flat.category_title}
+                        {flat.category.title}
                       </div>
                     </div>
                     <div className="p-4 pb-0">
-                      <h5 className="text-primary mb-3">${flat.price}</h5>
+                      <h5 className="text-primary mb-3">${flat.rent}</h5>
                       <Link
                         className="d-block h5 mb-2"
                         to={`/flat-details/${flat.slug}`}
@@ -161,21 +159,21 @@ const SearchFlatPage = () => {
                       </Link>
                       <p>
                         <i className="fa fa-map-marker-alt text-primary me-2"></i>
-                        {flat.location_title}
+                        {flat.location.title}
                       </p>
                     </div>
                     <div className="d-flex border-top">
                       <small className="flex-fill text-center border-end py-2">
                         <i className="fa fa-ruler-combined text-primary me-2"></i>
-                        {flat.flat_size} Sqft
+                        {flat.square_feet || "N/A"} Sqft
                       </small>
                       <small className="flex-fill text-center border-end py-2">
                         <i className="fa fa-bed text-primary me-2"></i>
-                        {flat.room} Bed
+                        {flat.bed_room || "N/A"} Bed
                       </small>
                       <small className="flex-fill text-center py-2">
                         <i className="fa fa-bath text-primary me-2"></i>
-                        {flat.bath} Bath
+                        {flat.washroom} Bath
                       </small>
                     </div>
                   </div>
@@ -184,7 +182,6 @@ const SearchFlatPage = () => {
             </div>
           )}
 
-          
           {/* Pagination */}
           <div className="col-12 mt-4 d-flex justify-content-center">
             <nav>

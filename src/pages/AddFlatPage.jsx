@@ -146,26 +146,29 @@ const AddFlatPage = () => {
         }
       }
 
-      // Always use JSON format to match the exact payload structure
-      const submitData = {
-        category_id: parseInt(formData.category),
-        location_id: parseInt(formData.location),
-        title: formData.title,
-        washroom: parseInt(formData.washroom) || 0,
-        commode: formData.commode,
-        water_supply: formData.water_supply,
-        floor: formData.floor,
-        tiles: formData.tiles,
-        kitchen: formData.kitchen,
-        cctv: formData.cctv,
-        roof_top_uses: formData.roof_top_uses,
-        garage: formData.garage,
-        image_1: null,
-        image_2: null,
-        image_3: null,
-        image_4: null,
-        image_5: null,
-      };
+      // Prepare FormData for submission
+      const submitData = new FormData();
+      submitData.append("category_id", parseInt(formData.category));
+      submitData.append("location_id", parseInt(formData.location));
+      submitData.append("title", formData.title);
+      submitData.append("washroom", parseInt(formData.washroom) || 0);
+      submitData.append("commode", formData.commode);
+      submitData.append("water_supply", formData.water_supply);
+      submitData.append("floor", formData.floor);
+      submitData.append("tiles", formData.tiles);
+      submitData.append("kitchen", formData.kitchen);
+      submitData.append("cctv", formData.cctv);
+      submitData.append("roof_top_uses", formData.roof_top_uses);
+      submitData.append("garage", formData.garage);
+
+      // Add images to FormData
+      for (let i = 0; i < Math.min(formData.images.length, 5); i++) {
+        submitData.append(`image_${i + 1}`, formData.images[i]);
+      }
+      // Append null for remaining image fields
+      for (let i = formData.images.length + 1; i <= 5; i++) {
+        submitData.append(`image_${i}`, "");
+      }
 
       // Add specific details based on form type
       if (formType === "family") {
@@ -174,14 +177,12 @@ const AddFlatPage = () => {
           setLoading(false);
           return;
         }
-        submitData.family_details = [{
-          bed_room: parseInt(formData.family_details.bed_room) || 0,
-          dining_room: formData.family_details.dining_room,
-          drawing_room: formData.family_details.drawing_room,
-          balcony: formData.family_details.balcony,
-          rent: parseFloat(formData.family_details.rent) || 0,
-          address: formData.family_details.address,
-        }];
+        submitData.append("bed_room", parseInt(formData.family_details.bed_room) || 0);
+        submitData.append("dining_room", formData.family_details.dining_room);
+        submitData.append("drawing_room", formData.family_details.drawing_room);
+        submitData.append("balcony", formData.family_details.balcony);
+        submitData.append("rent", parseFloat(formData.family_details.rent) || 0);
+        submitData.append("address", formData.family_details.address);
       } else if (formType === "bachelor") {
         if (!formData.bachelor_details.available_seats || !formData.bachelor_details.dining_charge ||
           !formData.bachelor_details.meal_rate_range || !formData.bachelor_details.extra_cost_range ||
@@ -190,34 +191,30 @@ const AddFlatPage = () => {
           setLoading(false);
           return;
         }
-        submitData.bachelor_details = [{
-          available_seats: formData.bachelor_details.available_seats,
-          dining_charge: parseFloat(formData.bachelor_details.dining_charge) || 0,
-          meal_rate_range: formData.bachelor_details.meal_rate_range,
-          extra_cost_range: formData.bachelor_details.extra_cost_range,
-          expected_total_cost: parseFloat(formData.bachelor_details.expected_total_cost) || 0,
-          total_members: formData.bachelor_details.total_members,
-          khala_facility: formData.bachelor_details.khala_facility,
-        }];
+        submitData.append("available_seats", formData.bachelor_details.available_seats);
+        submitData.append("dining_charge", parseFloat(formData.bachelor_details.dining_charge) || 0);
+        submitData.append("meal_rate_range", formData.bachelor_details.meal_rate_range);
+        submitData.append("extra_cost_range", formData.bachelor_details.extra_cost_range);
+        submitData.append("expected_total_cost", parseFloat(formData.bachelor_details.expected_total_cost) || 0);
+        submitData.append("total_members", formData.bachelor_details.total_members);
+        submitData.append("khala_facility", formData.bachelor_details.khala_facility);
       } else if (formType === "shop") {
         if (!formData.shop_details.rent || !formData.shop_details.square_feet || !formData.shop_details.address) {
           setMessage("Please fill in all required shop details: Rent, Square Feet, and Address.");
           setLoading(false);
           return;
         }
-        submitData.shop_details = [{
-          rent: parseFloat(formData.shop_details.rent) || 0,
-          square_feet: parseInt(formData.shop_details.square_feet) || 0,
-          preaching_space: formData.shop_details.preaching_space,
-          address: formData.shop_details.address,
-        }];
+        submitData.append("rent", parseFloat(formData.shop_details.rent) || 0);
+        submitData.append("square_feet", parseInt(formData.shop_details.square_feet) || 0);
+        submitData.append("preaching_space", formData.shop_details.preaching_space);
+        submitData.append("address", formData.shop_details.address);
       }
 
       // Log the payload for debugging
-      console.log("Payload being sent:", JSON.stringify(submitData, null, 2));
+      console.log("Payload being sent:", [...submitData.entries()]);
 
       const response = await myaxios.post("/flats/create/", submitData, {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       console.log("Server Response:", response.data);
